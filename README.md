@@ -19,6 +19,7 @@ Eventify is a modern, responsive, and high-fidelity landing page for discovering
 
 The project has been optimized for simplicity:
 - **`index.html`**: The complete application source. No external dependencies are required other than Google Fonts.
+- **`screenshot.png`**: A high-quality screenshot of the application UI.
 
 ## How to Use
 
@@ -33,3 +34,5 @@ The project has been optimized for simplicity:
 - **Vanilla JavaScript**: Lightweight and fast logic without heavy frameworks.
 - **Data-Driven UI**: Events are dynamically generated from a central JSON-like structure within the code, making it easy to update or extend.
 
+---
+*Designed & Developed by Aftab*
