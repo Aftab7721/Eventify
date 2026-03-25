@@ -16,7 +16,7 @@
     html { scroll-behavior: smooth; }
     body {
       font-family: 'DM Sans', sans-serif;
-      background: transparent; /* canvas provides bg */
+      background: #FAFAF8; /* fallback color */
       color: var(--text-primary);
       -webkit-font-smoothing: antialiased;
       overflow-x: hidden;
@@ -633,6 +633,7 @@
       margin: 12px 0;
       display: -webkit-box;
       -webkit-line-clamp: 2;
+      line-clamp: 2;
       -webkit-box-orient: vertical;
       overflow: hidden;
       flex: 1;
@@ -743,7 +744,259 @@
       .events-section { padding: 48px 16px 64px; }
     }
   </style>
-</head>
+  <script>
+    const eventsData = [
+      {
+        "id": 1,
+        "name": "Harmony Music Festival",
+        "date": "Sat, Aug 16, 2025",
+        "time": "7:00 PM",
+        "location": "Riverside Park, New York",
+        "description": "An open-air celebration of jazz, soul, and indie artists across three stages. Food trucks, art installations, and live painting.",
+        "category": "Music",
+        "emoji": "🎵",
+        "price": "Free",
+        "cardBg": "#F0EBE3"
+      },
+      {
+        "id": 2,
+        "name": "Future of AI Summit",
+        "date": "Thu, Sep 4, 2025",
+        "time": "9:00 AM",
+        "location": "Javits Center, New York",
+        "description": "A full-day conference with keynotes from leading AI researchers, product demos, and networking sessions for builders and founders.",
+        "category": "Tech",
+        "emoji": "💻",
+        "price": "$149",
+        "cardBg": "#E8EDF5"
+      },
+      {
+        "id": 3,
+        "name": "Urban Art Collective",
+        "date": "Fri, Sep 12, 2025",
+        "time": "6:00 PM",
+        "location": "Brooklyn Warehouse, NY",
+        "description": "An immersive gallery opening featuring 40 emerging street artists. Live mural creation, DJ sets, and artist Q&A sessions.",
+        "category": "Art",
+        "emoji": "🎨",
+        "price": "$25",
+        "cardBg": "#E9F0EC"
+      },
+      {
+        "id": 4,
+        "name": "Chef's Table Experience",
+        "date": "Sun, Sep 21, 2025",
+        "time": "7:30 PM",
+        "location": "Soho Loft, New York",
+        "description": "A 7-course tasting menu curated by Michelin-starred chefs, paired with natural wines and live piano.",
+        "category": "Food",
+        "emoji": "🍽️",
+        "price": "$95",
+        "cardBg": "#F5EBF0"
+      },
+      {
+        "id": 5,
+        "name": "Marathon Training Camp",
+        "date": "Sat, Oct 5, 2025",
+        "time": "6:30 AM",
+        "location": "Central Park, New York",
+        "description": "A weekend training bootcamp led by Olympic coaches. Includes nutrition workshops, recovery sessions, and group long runs.",
+        "category": "Sports",
+        "emoji": "🏃",
+        "price": "$40",
+        "cardBg": "#EEF0E5"
+      }
+    ];
+
+    const calendarSVG = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>`;
+    const pinSVG = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>`;
+
+    function renderEvents(data) {
+      const grid = document.getElementById('eventsGrid');
+      grid.innerHTML = '';
+
+      if (data.length === 0) {
+        grid.innerHTML = `
+          <div class="empty-state" role="status">
+            <span class="emoji" aria-hidden="true">🔍</span>
+            No events found. Try a different search term.
+          </div>`;
+        return;
+      }
+
+      data.forEach((ev, index) => {
+        const isFree  = ev.price.toLowerCase() === 'free';
+        const delay   = index * 80;
+
+        const card = document.createElement('article');
+        card.className = 'event-card';
+        card.style.animationDelay = `${delay}ms`;
+        card.setAttribute('role', 'listitem');
+        card.setAttribute('aria-label', ev.name);
+
+        card.innerHTML = `
+          <div class="card-image" style="background:${ev.cardBg};" aria-hidden="true">
+            <div class="card-emoji-wrap" role="img" aria-label="${ev.category} event">${ev.emoji}</div>
+            <span class="card-category-pill">${ev.category}</span>
+          </div>
+          <div class="card-body">
+            <h3 class="card-title">${ev.name}</h3>
+            <div class="card-meta">
+              ${calendarSVG}
+              <span>${ev.date} · ${ev.time}</span>
+            </div>
+            <div class="card-location">
+              ${pinSVG}
+              <span>${ev.location}</span>
+            </div>
+            <p class="card-desc">${ev.description}</p>
+            <div class="card-divider" aria-hidden="true"></div>
+            <div class="card-footer">
+              <span class="card-price ${isFree ? 'free' : 'paid'}" aria-label="Price: ${ev.price}">${ev.price}</span>
+              <button class="card-register" onclick="handleRegister(${ev.id})" aria-label="Register for ${ev.name}">
+                Register →
+              </button>
+            </div>
+          </div>`;
+
+        grid.appendChild(card);
+      });
+    }
+
+    function filterEvents(query) {
+      const q = query.trim().toLowerCase();
+      const filtered = eventsData.filter(ev => ev.name.toLowerCase().includes(q));
+      renderEvents(filtered);
+    }
+
+    function handleRegister(id) {
+      const ev = eventsData.find(e => e.id === id);
+      if (!ev) return;
+      const btn = document.querySelector(`[aria-label="Register for ${ev.name}"]`);
+      if (btn) {
+        const original = btn.textContent;
+        btn.textContent = '✓ Registered!';
+        btn.style.background = '#2a7d4f';
+        btn.disabled = true;
+        setTimeout(() => {
+          btn.textContent = original;
+          btn.style.background = '';
+          btn.disabled = false;
+        }, 2500);
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      const hamburgerBtn = document.getElementById('hamburgerBtn');
+      const navDrawer    = document.getElementById('navDrawer');
+
+      hamburgerBtn.addEventListener('click', () => {
+        const isOpen = navDrawer.classList.toggle('open');
+        hamburgerBtn.classList.toggle('open', isOpen);
+        hamburgerBtn.setAttribute('aria-expanded', String(isOpen));
+      });
+
+      window.closeDrawer = function() {
+        navDrawer.classList.remove('open');
+        hamburgerBtn.classList.remove('open');
+        hamburgerBtn.setAttribute('aria-expanded', 'false');
+      };
+
+      document.addEventListener('click', (e) => {
+        if (!navDrawer.contains(e.target) && !hamburgerBtn.contains(e.target)) {
+          closeDrawer();
+        }
+      });
+
+      renderEvents(eventsData);
+    });
+
+    class AuroraBackground {
+      constructor() {
+        this.canvas = document.getElementById('aurora-canvas');
+        if (!this.canvas) return;
+        this.ctx = this.canvas.getContext('2d');
+        this.time = 0;
+        this.mouse = { x: 0.5, y: 0.5 };
+        this.orbs = [
+          { bx: 0.15, by: 0.20, r: 0.40, rgb: [212, 98,  42],  speed: 0.0016, phase: 0.0 },
+          { bx: 0.75, by: 0.15, r: 0.34, rgb: [180, 140, 100], speed: 0.0012, phase: 1.2 },
+          { bx: 0.50, by: 0.60, r: 0.44, rgb: [100, 140, 180], speed: 0.0018, phase: 2.4 },
+          { bx: 0.85, by: 0.70, r: 0.32, rgb: [160, 180, 120], speed: 0.0014, phase: 0.8 },
+          { bx: 0.25, by: 0.80, r: 0.37, rgb: [200, 130, 100], speed: 0.0020, phase: 3.6 },
+          { bx: 0.60, by: 0.35, r: 0.30, rgb: [120, 160, 200], speed: 0.0011, phase: 1.8 },
+        ];
+        window.addEventListener('resize', () => this.resize());
+        window.addEventListener('mousemove', e => {
+          this.mouse.x = e.clientX / window.innerWidth;
+          this.mouse.y = e.clientY / window.innerHeight;
+        });
+        this.resize();
+        this.animate();
+      }
+      resize() {
+        this.canvas.width  = window.innerWidth;
+        this.canvas.height = window.innerHeight;
+      }
+      drawOrb(o, t) {
+        const W = this.canvas.width, H = this.canvas.height;
+        const dx = Math.sin(t * o.speed * 1.3 + o.phase) * 0.16;
+        const dy = Math.cos(t * o.speed       + o.phase * 0.7) * 0.13;
+        const mx = (this.mouse.x - 0.5) * 0.06;
+        const my = (this.mouse.y - 0.5) * 0.06;
+        const x  = (o.bx + dx + mx) * W;
+        const y  = (o.by + dy + my) * H;
+        const pulse = 1 + Math.sin(t * o.speed * 2 + o.phase) * 0.10;
+        const r  = o.r * Math.min(W, H) * pulse;
+        const [R, G, B] = o.rgb;
+        const g = this.ctx.createRadialGradient(x, y, 0, x, y, r);
+        g.addColorStop(0,    `rgba(${R},${G},${B},0.35)`);
+        g.addColorStop(0.35, `rgba(${R},${G},${B},0.21)`);
+        g.addColorStop(0.70, `rgba(${R},${G},${B},0.08)`);
+        g.addColorStop(1,    `rgba(${R},${G},${B},0)`);
+        this.ctx.fillStyle = g;
+        this.ctx.beginPath();
+        this.ctx.arc(x, y, r, 0, Math.PI * 2);
+        this.ctx.fill();
+      }
+      animate() {
+        this.time++;
+        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+        this.ctx.fillStyle = '#FAFAF8';
+        this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+        this.orbs.forEach(o => this.drawOrb(o, this.time));
+        requestAnimationFrame(() => this.animate());
+      }
+    }
+
+    (function createParticles() {
+      const wrap = document.getElementById('particles-wrap');
+      if (!wrap) return;
+      for (let i = 0; i < 22; i++) {
+        const d = document.createElement('div');
+        d.className = 'particle';
+        const size = Math.random() * 3 + 1.5;
+        d.style.cssText = `
+          width:${size}px; height:${size}px;
+          left:${Math.random()*100}vw;
+          top:${Math.random()*100}vh;
+          animation-duration:${Math.random()*18+14}s;
+          animation-delay:${Math.random()*-20}s;
+          opacity:${Math.random()*0.30+0.15};
+          background:${Math.random()>0.5?'rgba(212,98,42,0.65)':'rgba(100,140,180,0.60)'};
+        `;
+        wrap.appendChild(d);
+      }
+    })();
+
+    (function initAurora() {
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', () => new AuroraBackground());
+      } else {
+        new AuroraBackground();
+      }
+    })();
+  </script>
 <body>
 
   <!-- ─── BACKGROUND LAYERS ────────────────────────────────────── -->
@@ -797,9 +1050,8 @@
       </div>
 
       <h1 class="hero-heading" id="heroHeading">
-        Discover <em>Events</em><br>Near You
+        Discover Events Near You
       </h1>
-
       <p class="hero-sub">
         From tech conferences to weekend workshops — find what's happening around you and never miss a moment.
       </p>
@@ -907,276 +1159,9 @@
       <a href="#">Terms</a>
       <a href="#">Contact</a>
     </nav>
-    <p class="footer-copy">© 2025 Eventify. All rights reserved.</p>
+    <p class="footer-copy">© 2025 Eventify. Designed & Developed by Aftab.</p>
   </footer>
 
-  <!-- ─── JAVASCRIPT ─────────────────────────────────────────── -->
-  <script>
-    /* ── DATA ── */
-    const eventsData = [
-      {
-        id: 1,
-        name: "Harmony Music Festival",
-        date: "Sat, Aug 16, 2025",
-        time: "7:00 PM",
-        location: "Riverside Park, New York",
-        description: "An open-air celebration of jazz, soul, and indie artists across three stages. Food trucks, art installations, and live painting.",
-        category: "Music",
-        emoji: "🎵",
-        price: "Free",
-        cardBg: "#F0EBE3"
-      },
-      {
-        id: 2,
-        name: "Future of AI Summit",
-        date: "Thu, Sep 4, 2025",
-        time: "9:00 AM",
-        location: "Javits Center, New York",
-        description: "A full-day conference with keynotes from leading AI researchers, product demos, and networking sessions for builders and founders.",
-        category: "Tech",
-        emoji: "💻",
-        price: "$149",
-        cardBg: "#E8EDF5"
-      },
-      {
-        id: 3,
-        name: "Urban Art Collective",
-        date: "Fri, Sep 12, 2025",
-        time: "6:00 PM",
-        location: "Brooklyn Warehouse, NY",
-        description: "An immersive gallery opening featuring 40 emerging street artists. Live mural creation, DJ sets, and artist Q&A sessions.",
-        category: "Art",
-        emoji: "🎨",
-        price: "$25",
-        cardBg: "#E9F0EC"
-      },
-      {
-        id: 4,
-        name: "Chef's Table Experience",
-        date: "Sun, Sep 21, 2025",
-        time: "7:30 PM",
-        location: "Soho Loft, New York",
-        description: "A 7-course tasting menu curated by Michelin-starred chefs, paired with natural wines and live piano.",
-        category: "Food",
-        emoji: "🍽️",
-        price: "$95",
-        cardBg: "#F5EBF0"
-      },
-      {
-        id: 5,
-        name: "Marathon Training Camp",
-        date: "Sat, Oct 5, 2025",
-        time: "6:30 AM",
-        location: "Central Park, New York",
-        description: "A weekend training bootcamp led by Olympic coaches. Includes nutrition workshops, recovery sessions, and group long runs.",
-        category: "Sports",
-        emoji: "🏃",
-        price: "$40",
-        cardBg: "#EEF0E5"
-      }
-    ];
 
-    /* ── CALENDAR ICON SVG ── */
-    const calendarSVG = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>`;
-
-    /* ── PIN ICON SVG ── */
-    const pinSVG = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>`;
-
-    /* ── RENDER ── */
-    function renderEvents(data) {
-      const grid = document.getElementById('eventsGrid');
-      grid.innerHTML = '';
-
-      if (data.length === 0) {
-        grid.innerHTML = `
-          <div class="empty-state" role="status">
-            <span class="emoji" aria-hidden="true">🔍</span>
-            No events found. Try a different search term.
-          </div>`;
-        return;
-      }
-
-      data.forEach((ev, index) => {
-        const isFree  = ev.price.toLowerCase() === 'free';
-        const delay   = index * 80;
-
-        const card = document.createElement('article');
-        card.className = 'event-card';
-        card.style.animationDelay = `${delay}ms`;
-        card.setAttribute('role', 'listitem');
-        card.setAttribute('aria-label', ev.name);
-
-        card.innerHTML = `
-          <div class="card-image" style="background:${ev.cardBg};" aria-hidden="true">
-            <div class="card-emoji-wrap" role="img" aria-label="${ev.category} event">${ev.emoji}</div>
-            <span class="card-category-pill">${ev.category}</span>
-          </div>
-          <div class="card-body">
-            <h3 class="card-title">${ev.name}</h3>
-            <div class="card-meta">
-              ${calendarSVG}
-              <span>${ev.date} · ${ev.time}</span>
-            </div>
-            <div class="card-location">
-              ${pinSVG}
-              <span>${ev.location}</span>
-            </div>
-            <p class="card-desc">${ev.description}</p>
-            <div class="card-divider" aria-hidden="true"></div>
-            <div class="card-footer">
-              <span class="card-price ${isFree ? 'free' : 'paid'}" aria-label="Price: ${ev.price}">${ev.price}</span>
-              <button class="card-register" onclick="handleRegister(${ev.id})" aria-label="Register for ${ev.name}">
-                Register →
-              </button>
-            </div>
-          </div>`;
-
-        grid.appendChild(card);
-      });
-    }
-
-    /* ── FILTER ── */
-    function filterEvents(query) {
-      const q = query.trim().toLowerCase();
-      const filtered = eventsData.filter(ev => ev.name.toLowerCase().includes(q));
-      renderEvents(filtered);
-    }
-
-    /* ── REGISTER HANDLER ── */
-    function handleRegister(id) {
-      const ev = eventsData.find(e => e.id === id);
-      if (!ev) return;
-      // Simple feedback — in production this would open a modal / redirect
-      const btn = document.querySelector(`[aria-label="Register for ${ev.name}"]`);
-      if (btn) {
-        const original = btn.textContent;
-        btn.textContent = '✓ Registered!';
-        btn.style.background = '#2a7d4f';
-        btn.disabled = true;
-        setTimeout(() => {
-          btn.textContent = original;
-          btn.style.background = '';
-          btn.disabled = false;
-        }, 2500);
-      }
-    }
-
-    /* ── HAMBURGER ── */
-    const hamburgerBtn = document.getElementById('hamburgerBtn');
-    const navDrawer    = document.getElementById('navDrawer');
-
-    hamburgerBtn.addEventListener('click', () => {
-      const isOpen = navDrawer.classList.toggle('open');
-      hamburgerBtn.classList.toggle('open', isOpen);
-      hamburgerBtn.setAttribute('aria-expanded', String(isOpen));
-    });
-
-    function closeDrawer() {
-      navDrawer.classList.remove('open');
-      hamburgerBtn.classList.remove('open');
-      hamburgerBtn.setAttribute('aria-expanded', 'false');
-    }
-
-    // Close drawer on outside click
-    document.addEventListener('click', (e) => {
-      if (!navDrawer.contains(e.target) && !hamburgerBtn.contains(e.target)) {
-        closeDrawer();
-      }
-    });
-
-    /* ── SIMULATED FETCH + INITIAL RENDER ── */
-    function fetchEvents() {
-      return new Promise(resolve => setTimeout(() => resolve(eventsData), 300));
-    }
-
-    fetchEvents().then(data => renderEvents(data));
-
-    /* ── AURORA BACKGROUND ── */
-    class AuroraBackground {
-      constructor() {
-        this.canvas = document.getElementById('aurora-canvas');
-        this.ctx = this.canvas.getContext('2d');
-        this.time = 0;
-        this.mouse = { x: 0.5, y: 0.5 };
-        this.orbs = [
-          { bx: 0.15, by: 0.20, r: 0.40, rgb: [212, 98,  42],  speed: 0.0016, phase: 0.0 },
-          { bx: 0.75, by: 0.15, r: 0.34, rgb: [180, 140, 100], speed: 0.0012, phase: 1.2 },
-          { bx: 0.50, by: 0.60, r: 0.44, rgb: [100, 140, 180], speed: 0.0018, phase: 2.4 },
-          { bx: 0.85, by: 0.70, r: 0.32, rgb: [160, 180, 120], speed: 0.0014, phase: 0.8 },
-          { bx: 0.25, by: 0.80, r: 0.37, rgb: [200, 130, 100], speed: 0.0020, phase: 3.6 },
-          { bx: 0.60, by: 0.35, r: 0.30, rgb: [120, 160, 200], speed: 0.0011, phase: 1.8 },
-        ];
-        window.addEventListener('resize', () => this.resize());
-        window.addEventListener('mousemove', e => {
-          this.mouse.x = e.clientX / window.innerWidth;
-          this.mouse.y = e.clientY / window.innerHeight;
-        });
-        this.resize();
-        this.animate();
-      }
-      resize() {
-        this.canvas.width  = window.innerWidth;
-        this.canvas.height = window.innerHeight;
-      }
-      drawOrb(o, t) {
-        const W = this.canvas.width, H = this.canvas.height;
-        const dx = Math.sin(t * o.speed * 1.3 + o.phase) * 0.16;
-        const dy = Math.cos(t * o.speed       + o.phase * 0.7) * 0.13;
-        const mx = (this.mouse.x - 0.5) * 0.06;
-        const my = (this.mouse.y - 0.5) * 0.06;
-        const x  = (o.bx + dx + mx) * W;
-        const y  = (o.by + dy + my) * H;
-        const pulse = 1 + Math.sin(t * o.speed * 2 + o.phase) * 0.10;
-        const r  = o.r * Math.min(W, H) * pulse;
-        const [R, G, B] = o.rgb;
-        const g = this.ctx.createRadialGradient(x, y, 0, x, y, r);
-        g.addColorStop(0,    `rgba(${R},${G},${B},0.35)`);
-        g.addColorStop(0.35, `rgba(${R},${G},${B},0.21)`);
-        g.addColorStop(0.70, `rgba(${R},${G},${B},0.08)`);
-        g.addColorStop(1,    `rgba(${R},${G},${B},0)`);
-        this.ctx.fillStyle = g;
-        this.ctx.beginPath();
-        this.ctx.arc(x, y, r, 0, Math.PI * 2);
-        this.ctx.fill();
-      }
-      animate() {
-        this.time++;
-        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-        this.ctx.fillStyle = '#FAFAF8';
-        this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
-        this.orbs.forEach(o => this.drawOrb(o, this.time));
-        requestAnimationFrame(() => this.animate());
-      }
-    }
-
-    /* ── FLOATING PARTICLES ── */
-    (function createParticles() {
-      const wrap = document.getElementById('particles-wrap');
-      for (let i = 0; i < 22; i++) {
-        const d = document.createElement('div');
-        d.className = 'particle';
-        const size = Math.random() * 3 + 1.5;
-        d.style.cssText = `
-          width:${size}px; height:${size}px;
-          left:${Math.random()*100}vw;
-          top:${Math.random()*100}vh;
-          animation-duration:${Math.random()*18+14}s;
-          animation-delay:${Math.random()*-20}s;
-          opacity:${Math.random()*0.30+0.15};
-          background:${Math.random()>0.5?'rgba(212,98,42,0.65)':'rgba(100,140,180,0.60)'};
-        `;
-        wrap.appendChild(d);
-      }
-    })();
-
-    /* ── INIT BACKGROUND ── */
-    (function initAurora() {
-      if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', () => new AuroraBackground());
-      } else {
-        new AuroraBackground();
-      }
-    })();
-  </script>
 </body>
 </html>
