@@ -1,0 +1,62 @@
+[
+    {
+        "id": 1,
+        "name": "Harmony Music Festival",
+        "date": "Aug 16, 2025",
+        "time": "7:00 PM",
+        "location": "Riverside Park, New York",
+        "description": "An open-air celebration of jazz, soul, and indie artists across three stages. Food trucks and art installations.",
+        "category": "Music",
+        "emoji": "🎵",
+        "price": "Free",
+        "cardBg": "#F0EBE3"
+    },
+    {
+        "id": 2,
+        "name": "Future of AI Summit",
+        "date": "Sep 4, 2025",
+        "time": "9:00 AM",
+        "location": "Javits Center, New York",
+        "description": "A full-day conference with keynotes from leading AI researchers and networking sessions.",
+        "category": "Tech",
+        "emoji": "💻",
+        "price": "$149",
+        "cardBg": "#E8EDF5"
+    },
+    {
+        "id": 3,
+        "name": "Urban Art Collective",
+        "date": "Sep 12, 2025",
+        "time": "6:00 PM",
+        "location": "Brooklyn Warehouse, NY",
+        "description": "An immersive gallery opening featuring 40 emerging street artists. Live mural creation.",
+        "category": "Art",
+        "emoji": "🎨",
+        "price": "$25",
+        "cardBg": "#E9F0EC"
+    },
+    {
+        "id": 4,
+        "name": "Chef's Table Experience",
+        "date": "Sep 21, 2025",
+        "time": "7:30 PM",
+        "location": "Soho Loft, New York",
+        "description": "A 7-course tasting menu curated by Michelin-starred chefs, paired with natural wines.",
+        "category": "Food",
+        "emoji": "🍽️",
+        "price": "$95",
+        "cardBg": "#F5EBF0"
+    },
+    {
+        "id": 5,
+        "name": "Marathon Training Camp",
+        "date": "Oct 5, 2025",
+        "time": "6:30 AM",
+        "location": "Central Park, New York",
+        "description": "A weekend training bootcamp led by Olympic coaches. Includes nutrition workshops.",
+        "category": "Sports",
+        "emoji": "🏃",
+        "price": "$40",
+        "cardBg": "#EEF0E5"
+    }
+]
