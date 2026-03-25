@@ -94,6 +94,7 @@
       --radius-sm:     8px;
       --radius-md:     14px;
       --radius-lg:     20px;
+      --bg-muted:      #F4F3F0;
       --transition:    all 0.22s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
@@ -779,7 +780,248 @@
       animation: ripple 0.55s ease-out forwards;
       pointer-events: none;
     }
+
+    /* ─── CONTACT SECTION ───────────────────────────────────── */
+    .contact-section {
+      padding: 100px 24px;
+      max-width: 1200px;
+      margin: 0 auto;
+      text-align: center;
+    }
+    .contact-inner {
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 60px 40px;
+      box-shadow: var(--shadow-md);
+    }
+    .contact-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 2.5rem;
+      margin-bottom: 16px;
+    }
+    .contact-desc {
+      color: var(--text-secondary);
+      max-width: 600px;
+      margin: 0 auto 32px;
+      line-height: 1.6;
+    }
+    .contact-grid {
+      display: flex;
+      justify-content: center;
+      gap: 40px;
+      flex-wrap: wrap;
+    }
+    .contact-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+    }
+    .contact-item-label {
+      font-weight: 600;
+      font-size: 0.9rem;
+      color: var(--text-primary);
+    }
+    .contact-item-value {
+      color: var(--accent);
+      font-weight: 500;
+    }
   </style>
+
+<body>
+
+  <!-- ─── BACKGROUND LAYERS ────────────────────────────────────── -->
+  <canvas id="aurora-canvas" aria-hidden="true"></canvas>
+  <div class="grain-overlay" aria-hidden="true"></div>
+  <div class="particles-wrap" id="particles-wrap" aria-hidden="true"></div>
+  <div id="cursor-glow"></div>
+
+  <!-- ─── NAVIGATION ─────────────────────────────────────────── -->
+  <nav class="nav" role="navigation" aria-label="Main navigation">
+    <div class="nav-inner">
+      <!-- Logo -->
+      <a href="#" class="nav-logo" aria-label="Eventify home">
+        <svg width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <rect width="28" height="28" rx="7" fill="#D4622A"/>
+          <rect x="7" y="7" width="6" height="6" rx="2" fill="white" opacity="0.9"/>
+          <rect x="15" y="7" width="6" height="6" rx="2" fill="white" opacity="0.6"/>
+          <rect x="7" y="15" width="6" height="6" rx="2" fill="white" opacity="0.6"/>
+          <rect x="15" y="15" width="6" height="6" rx="2" fill="white" opacity="0.9"/>
+        </svg>
+        <span class="nav-logo-text">Eventify</span>
+      </a>
+
+      <!-- Desktop links -->
+      <ul class="nav-links" role="list">
+        <li><a href="#home">Home</a></li>
+        <li><a href="#events">Events</a></li>
+        <li><a href="#contact">Contact</a></li>
+      </ul>
+
+      <!-- Hamburger button -->
+      <button class="hamburger" id="hamburgerBtn" aria-label="Toggle menu" aria-expanded="false" aria-controls="navDrawer">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- Mobile Drawer -->
+  <div class="nav-drawer" id="navDrawer" role="menu">
+    <a href="#home"    role="menuitem" onclick="closeDrawer()">Home</a>
+    <a href="#events"  role="menuitem" onclick="closeDrawer()">Events</a>
+    <a href="#contact" role="menuitem" onclick="closeDrawer()">Contact</a>
+  </div>
+
+  <!-- ─── HERO ──────────────────────────────────────────────── -->
+  <section class="hero" id="home" aria-labelledby="heroHeading">
+    <div class="hero-inner">
+      <div class="hero-badge" role="status">
+        <span aria-hidden="true">✦</span> 2,400+ Events This Month
+      </div>
+
+      <h1 class="hero-heading" id="heroHeading">
+        Discover Events Near You
+      </h1>
+      <p class="hero-sub">
+        From tech conferences to weekend workshops — find what's happening around you and never miss a moment.
+      </p>
+
+      <div class="hero-cta">
+        <a href="#events" class="btn-primary" role="button">Browse Events</a>
+        <a href="#contact" class="btn-secondary" role="button">Learn More</a>
+      </div>
+
+      <div class="hero-stats" aria-label="Platform statistics">
+        <div class="hero-stat">
+          <span class="hero-stat-num">2,400+</span>
+          <span class="hero-stat-label">Events</span>
+        </div>
+        <div class="hero-stat">
+          <span class="hero-stat-num">180+</span>
+          <span class="hero-stat-label">Cities</span>
+        </div>
+        <div class="hero-stat">
+          <span class="hero-stat-num">50K+</span>
+          <span class="hero-stat-label">Attendees</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Hero divider -->
+  <div class="hero-divider" aria-hidden="true"></div>
+
+  <!-- ─── SEARCH ─────────────────────────────────────────────── -->
+  <section class="search-section" aria-label="Search events">
+    <div class="search-inner reveal">
+      <label class="search-label" for="searchInput">Search Events</label>
+      <div class="search-wrap">
+        <!-- Magnifying glass icon -->
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+        </svg>
+        <input
+          type="search"
+          id="searchInput"
+          name="search"
+          placeholder="Search by event name…"
+          autocomplete="off"
+          aria-label="Search events by name"
+          oninput="filterEvents(this.value)"
+        />
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── FEATURED EVENTS ────────────────────────────────────── -->
+  <section class="events-section" id="events" aria-labelledby="eventsTitle">
+    <div class="events-header reveal">
+      <p class="events-eyebrow">Upcoming</p>
+      <h2 class="events-title" id="eventsTitle">Featured Events</h2>
+      <p class="events-subtitle">Hand-picked experiences happening near you</p>
+    </div>
+
+    <!-- Cards rendered here by JS -->
+    <div id="eventsGrid" role="list" aria-live="polite" aria-label="Event listings">
+      <!-- Skeleton placeholders -->
+      <div class="skeleton-card" aria-hidden="true">
+        <div class="skeleton-img"></div>
+        <div class="skeleton-body">
+          <div class="skeleton-line"></div>
+          <div class="skeleton-line short"></div>
+          <div class="skeleton-line shorter"></div>
+        </div>
+      </div>
+      <div class="skeleton-card" aria-hidden="true">
+        <div class="skeleton-img"></div>
+        <div class="skeleton-body">
+          <div class="skeleton-line"></div>
+          <div class="skeleton-line short"></div>
+          <div class="skeleton-line shorter"></div>
+        </div>
+      </div>
+      <div class="skeleton-card" aria-hidden="true">
+        <div class="skeleton-img"></div>
+        <div class="skeleton-body">
+          <div class="skeleton-line"></div>
+          <div class="skeleton-line short"></div>
+          <div class="skeleton-line shorter"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ─── CONTACT ───────────────────────────────────────────── -->
+  <section class="contact-section" id="contact" aria-labelledby="contactTitle">
+    <div class="contact-inner reveal">
+      <h2 class="contact-title" id="contactTitle">Get in Touch</h2>
+      <p class="contact-desc">
+        Have questions about an event or want to list your own? Our team is here to help you create memorable experiences.
+      </p>
+      <div class="contact-grid">
+        <div class="contact-item">
+          <span class="contact-item-label">Email Us</span>
+          <span class="contact-item-value">hello@eventify.com</span>
+        </div>
+        <div class="contact-item">
+          <span class="contact-item-label">Follow Us</span>
+          <span class="contact-item-value">@eventify_hq</span>
+        </div>
+        <div class="contact-item">
+          <span class="contact-item-label">Visit Us</span>
+          <span class="contact-item-value">Soho, New York</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── FOOTER ────────────────────────────────────────────── -->
+  <footer class="footer" role="contentinfo">
+    <div class="footer-logo" aria-label="Eventify">
+      <svg width="26" height="26" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <rect width="28" height="28" rx="7" fill="rgba(255,255,255,0.15)"/>
+        <rect x="7" y="7" width="6" height="6" rx="2" fill="white" opacity="0.9"/>
+        <rect x="15" y="7" width="6" height="6" rx="2" fill="white" opacity="0.55"/>
+        <rect x="7" y="15" width="6" height="6" rx="2" fill="white" opacity="0.55"/>
+        <rect x="15" y="15" width="6" height="6" rx="2" fill="white" opacity="0.9"/>
+      </svg>
+      <span class="footer-logo-text">Eventify</span>
+    </div>
+    <p class="footer-tagline">Find your next great experience.</p>
+    <nav class="footer-links" aria-label="Footer links">
+      <a href="#">Privacy</a>
+      <a href="#">Terms</a>
+      <a href="#">Contact</a>
+    </nav>
+    <p class="footer-copy">© 2025 Eventify. Designed & Developed by Aftab.</p>
+  </footer>
+
+
+
   <script>
     const eventsData = [
       {
@@ -1011,12 +1253,12 @@
         this.time = 0;
         this.mouse = { x: 0.5, y: 0.5 };
         this.orbs = [
-          { bx: 0.15, by: 0.20, r: 0.40, rgb: [212, 98,  42],  speed: 0.00016, phase: 0.0 },
-          { bx: 0.75, by: 0.15, r: 0.34, rgb: [180, 140, 100], speed: 0.00012, phase: 1.2 },
-          { bx: 0.50, by: 0.60, r: 0.44, rgb: [100, 140, 180], speed: 0.00018, phase: 2.4 },
-          { bx: 0.85, by: 0.70, r: 0.32, rgb: [160, 180, 120], speed: 0.00014, phase: 0.8 },
-          { bx: 0.25, by: 0.80, r: 0.37, rgb: [200, 130, 100], speed: 0.00020, phase: 3.6 },
-          { bx: 0.60, by: 0.35, r: 0.30, rgb: [120, 160, 200], speed: 0.00011, phase: 1.8 },
+          { bx: 0.15, by: 0.20, r: 0.40, rgb: [212, 98,  42],  speed: 0.000016, phase: 0.0 },
+          { bx: 0.75, by: 0.15, r: 0.34, rgb: [180, 140, 100], speed: 0.000012, phase: 1.2 },
+          { bx: 0.50, by: 0.60, r: 0.44, rgb: [100, 140, 180], speed: 0.000018, phase: 2.4 },
+          { bx: 0.85, by: 0.70, r: 0.32, rgb: [160, 180, 120], speed: 0.000014, phase: 0.8 },
+          { bx: 0.25, by: 0.80, r: 0.37, rgb: [200, 130, 100], speed: 0.000020, phase: 3.6 },
+          { bx: 0.60, by: 0.35, r: 0.30, rgb: [120, 160, 200], speed: 0.000011, phase: 1.8 },
         ];
         window.addEventListener('resize', () => this.resize());
         window.addEventListener('mousemove', e => {
@@ -1089,172 +1331,5 @@
       }
     })();
   </script>
-<body>
-
-  <!-- ─── BACKGROUND LAYERS ────────────────────────────────────── -->
-  <canvas id="aurora-canvas" aria-hidden="true"></canvas>
-  <div class="grain-overlay" aria-hidden="true"></div>
-  <div class="particles-wrap" id="particles-wrap" aria-hidden="true"></div>
-  <div id="cursor-glow"></div>
-
-  <!-- ─── NAVIGATION ─────────────────────────────────────────── -->
-  <nav class="nav" role="navigation" aria-label="Main navigation">
-    <div class="nav-inner">
-      <!-- Logo -->
-      <a href="#" class="nav-logo" aria-label="Eventify home">
-        <svg width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-          <rect width="28" height="28" rx="7" fill="#D4622A"/>
-          <rect x="7" y="7" width="6" height="6" rx="2" fill="white" opacity="0.9"/>
-          <rect x="15" y="7" width="6" height="6" rx="2" fill="white" opacity="0.6"/>
-          <rect x="7" y="15" width="6" height="6" rx="2" fill="white" opacity="0.6"/>
-          <rect x="15" y="15" width="6" height="6" rx="2" fill="white" opacity="0.9"/>
-        </svg>
-        <span class="nav-logo-text">Eventify</span>
-      </a>
-
-      <!-- Desktop links -->
-      <ul class="nav-links" role="list">
-        <li><a href="#home">Home</a></li>
-        <li><a href="#events">Events</a></li>
-        <li><a href="#contact">Contact</a></li>
-      </ul>
-
-      <!-- Hamburger button -->
-      <button class="hamburger" id="hamburgerBtn" aria-label="Toggle menu" aria-expanded="false" aria-controls="navDrawer">
-        <span></span>
-        <span></span>
-        <span></span>
-      </button>
-    </div>
-  </nav>
-
-  <!-- Mobile Drawer -->
-  <div class="nav-drawer" id="navDrawer" role="menu">
-    <a href="#home"    role="menuitem" onclick="closeDrawer()">Home</a>
-    <a href="#events"  role="menuitem" onclick="closeDrawer()">Events</a>
-    <a href="#contact" role="menuitem" onclick="closeDrawer()">Contact</a>
-  </div>
-
-  <!-- ─── HERO ──────────────────────────────────────────────── -->
-  <section class="hero" id="home" aria-labelledby="heroHeading">
-    <div class="hero-inner">
-      <div class="hero-badge" role="status">
-        <span aria-hidden="true">✦</span> 2,400+ Events This Month
-      </div>
-
-      <h1 class="hero-heading" id="heroHeading">
-        Discover Events Near You
-      </h1>
-      <p class="hero-sub">
-        From tech conferences to weekend workshops — find what's happening around you and never miss a moment.
-      </p>
-
-      <div class="hero-cta">
-        <a href="#events" class="btn-primary" role="button">Browse Events</a>
-        <a href="#contact" class="btn-secondary" role="button">Learn More</a>
-      </div>
-
-      <div class="hero-stats" aria-label="Platform statistics">
-        <div class="hero-stat">
-          <span class="hero-stat-num">2,400+</span>
-          <span class="hero-stat-label">Events</span>
-        </div>
-        <div class="hero-stat">
-          <span class="hero-stat-num">180+</span>
-          <span class="hero-stat-label">Cities</span>
-        </div>
-        <div class="hero-stat">
-          <span class="hero-stat-num">50K+</span>
-          <span class="hero-stat-label">Attendees</span>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Hero divider -->
-  <div class="hero-divider" aria-hidden="true"></div>
-
-  <!-- ─── SEARCH ─────────────────────────────────────────────── -->
-  <section class="search-section" aria-label="Search events">
-    <div class="search-inner reveal">
-      <label class="search-label" for="searchInput">Search Events</label>
-      <div class="search-wrap">
-        <!-- Magnifying glass icon -->
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
-        </svg>
-        <input
-          type="search"
-          id="searchInput"
-          name="search"
-          placeholder="Search by event name…"
-          autocomplete="off"
-          aria-label="Search events by name"
-          oninput="filterEvents(this.value)"
-        />
-      </div>
-    </div>
-  </section>
-
-  <!-- ─── FEATURED EVENTS ────────────────────────────────────── -->
-  <section class="events-section" id="events" aria-labelledby="eventsTitle">
-    <div class="events-header reveal">
-      <p class="events-eyebrow">Upcoming</p>
-      <h2 class="events-title" id="eventsTitle">Featured Events</h2>
-      <p class="events-subtitle">Hand-picked experiences happening near you</p>
-    </div>
-
-    <!-- Cards rendered here by JS -->
-    <div id="eventsGrid" role="list" aria-live="polite" aria-label="Event listings">
-      <!-- Skeleton placeholders -->
-      <div class="skeleton-card" aria-hidden="true">
-        <div class="skeleton-img"></div>
-        <div class="skeleton-body">
-          <div class="skeleton-line"></div>
-          <div class="skeleton-line short"></div>
-          <div class="skeleton-line shorter"></div>
-        </div>
-      </div>
-      <div class="skeleton-card" aria-hidden="true">
-        <div class="skeleton-img"></div>
-        <div class="skeleton-body">
-          <div class="skeleton-line"></div>
-          <div class="skeleton-line short"></div>
-          <div class="skeleton-line shorter"></div>
-        </div>
-      </div>
-      <div class="skeleton-card" aria-hidden="true">
-        <div class="skeleton-img"></div>
-        <div class="skeleton-body">
-          <div class="skeleton-line"></div>
-          <div class="skeleton-line short"></div>
-          <div class="skeleton-line shorter"></div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- ─── FOOTER ────────────────────────────────────────────── -->
-  <footer class="footer" id="contact" role="contentinfo">
-    <div class="footer-logo" aria-label="Eventify">
-      <svg width="26" height="26" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-        <rect width="28" height="28" rx="7" fill="rgba(255,255,255,0.15)"/>
-        <rect x="7" y="7" width="6" height="6" rx="2" fill="white" opacity="0.9"/>
-        <rect x="15" y="7" width="6" height="6" rx="2" fill="white" opacity="0.55"/>
-        <rect x="7" y="15" width="6" height="6" rx="2" fill="white" opacity="0.55"/>
-        <rect x="15" y="15" width="6" height="6" rx="2" fill="white" opacity="0.9"/>
-      </svg>
-      <span class="footer-logo-text">Eventify</span>
-    </div>
-    <p class="footer-tagline">Find your next great experience.</p>
-    <nav class="footer-links" aria-label="Footer links">
-      <a href="#">Privacy</a>
-      <a href="#">Terms</a>
-      <a href="#">Contact</a>
-    </nav>
-    <p class="footer-copy">© 2025 Eventify. Designed & Developed by Aftab.</p>
-  </footer>
-
-
 </body>
 </html>
