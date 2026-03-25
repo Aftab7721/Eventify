@@ -16,7 +16,7 @@
     html { scroll-behavior: smooth; }
     body {
       font-family: 'DM Sans', sans-serif;
-      background: #FAFAF8; /* fallback color */
+      background: transparent !important;
       color: var(--text-primary);
       -webkit-font-smoothing: antialiased;
       overflow-x: hidden;
@@ -51,6 +51,19 @@
       position: fixed; top: 0; left: 0;
       width: 100%; height: 100%;
       z-index: 2; pointer-events: none; overflow: hidden;
+    }
+    #cursor-glow {
+      position: fixed;
+      width: 380px;
+      height: 380px;
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 3;
+      transform: translate(-50%, -50%);
+      background: radial-gradient(circle, rgba(212,98,42,0.09) 0%, rgba(212,98,42,0.04) 35%, transparent 70%);
+      transition: opacity 0.4s ease;
+      opacity: 0;
+      mix-blend-mode: multiply;
     }
     .particle {
       position: absolute; border-radius: 50%;
@@ -219,10 +232,11 @@
       content: '';
       position: absolute; inset: 0; z-index: -1; pointer-events: none;
       background:
-        radial-gradient(ellipse 80% 60% at 20% 40%, rgba(212,98,42,0.08) 0%, transparent 60%),
-        radial-gradient(ellipse 60% 80% at 80% 20%, rgba(100,140,180,0.07) 0%, transparent 55%),
-        radial-gradient(ellipse 70% 50% at 50% 100%, rgba(180,140,100,0.05) 0%, transparent 50%);
-      animation: meshshift 12s ease-in-out infinite alternate;
+        radial-gradient(ellipse 90% 70% at 15% 30%, rgba(212,98,42,0.11) 0%, transparent 55%),
+        radial-gradient(ellipse 70% 90% at 85% 10%, rgba(100,140,180,0.09) 0%, transparent 50%),
+        radial-gradient(ellipse 80% 60% at 50% 110%, rgba(180,140,100,0.07) 0%, transparent 45%),
+        radial-gradient(ellipse 40% 40% at 70% 60%, rgba(160,180,120,0.05) 0%, transparent 40%);
+      animation: meshshift 16s ease-in-out infinite alternate;
     }
     .hero-inner {
       max-width: 780px;
@@ -379,8 +393,8 @@
 
     /* ─── SEARCH ───────────────────────────────────────────────── */
     .search-section {
-      background: rgba(244,243,240,0.72);
-      backdrop-filter: blur(12px);
+      background: rgba(244,243,240,0.55);
+      backdrop-filter: blur(20px) saturate(160%);
       padding: 40px 24px 48px;
       position: relative; z-index: 10;
     }
@@ -519,21 +533,23 @@
 
     /* ─── EVENT CARD ───────────────────────────────────────────── */
     .event-card {
-      background: rgba(255,255,255,0.72);
-      backdrop-filter: blur(20px) saturate(160%);
-      -webkit-backdrop-filter: blur(20px) saturate(160%);
+      background: rgba(255,255,255,0.78);
+      backdrop-filter: blur(24px) saturate(180%);
+      -webkit-backdrop-filter: blur(24px) saturate(180%);
       border: 1px solid rgba(232,230,225,0.85);
       border-radius: var(--radius-lg);
       overflow: hidden;
       position: relative;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.06), 0 1px 3px rgba(0,0,0,0.04);
-      transition: transform 0.28s cubic-bezier(0.4,0,0.2,1),
-                  box-shadow 0.28s cubic-bezier(0.4,0,0.2,1),
-                  border-color 0.28s ease;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06), 0 1px 3px rgba(0,0,0,0.04), inset 0 1px 0 rgba(255,255,255,0.9);
+      transition: opacity 0.55s cubic-bezier(0.4,0,0.2,1), transform 0.55s cubic-bezier(0.4,0,0.2,1);
       display: flex;
       flex-direction: column;
       opacity: 0;
-      animation: fadeInUp 0.6s ease forwards;
+      transform: translateY(28px);
+    }
+    .event-card.visible {
+      opacity: 1;
+      transform: translateY(0);
     }
     .event-card::after {
       content: '';
@@ -547,18 +563,13 @@
     .event-card:hover {
       transform: translateY(-8px) scale(1.015);
       box-shadow:
-        0 20px 50px rgba(0,0,0,0.12),
-        0 8px 20px rgba(212,98,42,0.10),
-        0 2px 6px rgba(0,0,0,0.06);
+        0 24px 60px rgba(0,0,0,0.13),
+        0 8px 24px rgba(212,98,42,0.12),
+        0 2px 6px rgba(0,0,0,0.06),
+        inset 0 1px 0 rgba(255,255,255,0.9);
       border-color: rgba(212,98,42,0.30);
     }
     .event-card:hover::after { opacity: 1; }
-    /* Card stagger delays */
-    .event-card:nth-child(1) { animation-delay: 0.10s; }
-    .event-card:nth-child(2) { animation-delay: 0.20s; }
-    .event-card:nth-child(3) { animation-delay: 0.30s; }
-    .event-card:nth-child(4) { animation-delay: 0.40s; }
-    .event-card:nth-child(5) { animation-delay: 0.50s; }
     /* Card image band */
     .card-image {
       height: 180px;
@@ -743,6 +754,31 @@
       #eventsGrid { grid-template-columns: 1fr; }
       .events-section { padding: 48px 16px 64px; }
     }
+
+    /* ─── REVEAL ANIMATIONS ──────────────────────────────────── */
+    .reveal {
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 0.6s cubic-bezier(0.4,0,0.2,1), transform 0.6s cubic-bezier(0.4,0,0.2,1);
+    }
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* ─── RIPPLE EFFECT ──────────────────────────────────────── */
+    @keyframes ripple {
+      to { transform: scale(3.5); opacity: 0; }
+    }
+    .ripple-effect {
+      position: absolute;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.35);
+      width: 40px; height: 40px;
+      margin-left: -20px; margin-top: -20px;
+      animation: ripple 0.55s ease-out forwards;
+      pointer-events: none;
+    }
   </style>
   <script>
     const eventsData = [
@@ -826,11 +862,9 @@
 
       data.forEach((ev, index) => {
         const isFree  = ev.price.toLowerCase() === 'free';
-        const delay   = index * 80;
 
         const card = document.createElement('article');
         card.className = 'event-card';
-        card.style.animationDelay = `${delay}ms`;
         card.setAttribute('role', 'listitem');
         card.setAttribute('aria-label', ev.name);
 
@@ -860,7 +894,23 @@
           </div>`;
 
         grid.appendChild(card);
+        setTimeout(() => observeCards(), 50);
       });
+    }
+
+    function observeCards() {
+      const cards = document.querySelectorAll('.event-card');
+      const io = new IntersectionObserver((entries) => {
+        entries.forEach((entry, i) => {
+          if (entry.isIntersecting) {
+            setTimeout(() => {
+              entry.target.classList.add('visible');
+            }, i * 80);
+            io.unobserve(entry.target);
+          }
+        });
+      }, { threshold: 0.12 });
+      cards.forEach(card => io.observe(card));
     }
 
     function filterEvents(query) {
@@ -909,6 +959,48 @@
       });
 
       renderEvents(eventsData);
+      observeCards();
+
+      // Fix 2 — Mouse cursor glow logic
+      const cursorGlow = document.getElementById('cursor-glow');
+      let glowVisible = false;
+      document.addEventListener('mousemove', (e) => {
+        cursorGlow.style.left = e.clientX + 'px';
+        cursorGlow.style.top = e.clientY + 'px';
+        if (!glowVisible) {
+          cursorGlow.style.opacity = '1';
+          glowVisible = true;
+        }
+      });
+      document.addEventListener('mouseleave', () => {
+        cursorGlow.style.opacity = '0';
+        glowVisible = false;
+      });
+
+      // Fix 7 — Smooth scroll reveal logic
+      const revealEls = document.querySelectorAll('.reveal');
+      const revealObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('visible');
+            revealObserver.unobserve(entry.target);
+          }
+        });
+      }, { threshold: 0.15 });
+      revealEls.forEach(el => revealObserver.observe(el));
+
+      // Fix 8 — Register button ripple effect
+      document.addEventListener('click', (e) => {
+        const btn = e.target.closest('.card-register, .btn-primary, .btn-secondary');
+        if (!btn) return;
+        const ripple = document.createElement('span');
+        ripple.className = 'ripple-effect';
+        const rect = btn.getBoundingClientRect();
+        ripple.style.left = (e.clientX - rect.left) + 'px';
+        ripple.style.top  = (e.clientY - rect.top) + 'px';
+        btn.appendChild(ripple);
+        setTimeout(() => ripple.remove(), 600);
+      });
     });
 
     class AuroraBackground {
@@ -919,12 +1011,12 @@
         this.time = 0;
         this.mouse = { x: 0.5, y: 0.5 };
         this.orbs = [
-          { bx: 0.15, by: 0.20, r: 0.40, rgb: [212, 98,  42],  speed: 0.0016, phase: 0.0 },
-          { bx: 0.75, by: 0.15, r: 0.34, rgb: [180, 140, 100], speed: 0.0012, phase: 1.2 },
-          { bx: 0.50, by: 0.60, r: 0.44, rgb: [100, 140, 180], speed: 0.0018, phase: 2.4 },
-          { bx: 0.85, by: 0.70, r: 0.32, rgb: [160, 180, 120], speed: 0.0014, phase: 0.8 },
-          { bx: 0.25, by: 0.80, r: 0.37, rgb: [200, 130, 100], speed: 0.0020, phase: 3.6 },
-          { bx: 0.60, by: 0.35, r: 0.30, rgb: [120, 160, 200], speed: 0.0011, phase: 1.8 },
+          { bx: 0.15, by: 0.20, r: 0.40, rgb: [212, 98,  42],  speed: 0.00016, phase: 0.0 },
+          { bx: 0.75, by: 0.15, r: 0.34, rgb: [180, 140, 100], speed: 0.00012, phase: 1.2 },
+          { bx: 0.50, by: 0.60, r: 0.44, rgb: [100, 140, 180], speed: 0.00018, phase: 2.4 },
+          { bx: 0.85, by: 0.70, r: 0.32, rgb: [160, 180, 120], speed: 0.00014, phase: 0.8 },
+          { bx: 0.25, by: 0.80, r: 0.37, rgb: [200, 130, 100], speed: 0.00020, phase: 3.6 },
+          { bx: 0.60, by: 0.35, r: 0.30, rgb: [120, 160, 200], speed: 0.00011, phase: 1.8 },
         ];
         window.addEventListener('resize', () => this.resize());
         window.addEventListener('mousemove', e => {
@@ -940,19 +1032,19 @@
       }
       drawOrb(o, t) {
         const W = this.canvas.width, H = this.canvas.height;
-        const dx = Math.sin(t * o.speed * 1.3 + o.phase) * 0.16;
-        const dy = Math.cos(t * o.speed       + o.phase * 0.7) * 0.13;
-        const mx = (this.mouse.x - 0.5) * 0.06;
-        const my = (this.mouse.y - 0.5) * 0.06;
+        const dx = Math.sin(t * o.speed * 1.3 + o.phase) * 0.12;
+        const dy = Math.cos(t * o.speed       + o.phase * 0.7) * 0.10;
+        const mx = (this.mouse.x - 0.5) * 0.04;
+        const my = (this.mouse.y - 0.5) * 0.04;
         const x  = (o.bx + dx + mx) * W;
         const y  = (o.by + dy + my) * H;
         const pulse = 1 + Math.sin(t * o.speed * 2 + o.phase) * 0.10;
         const r  = o.r * Math.min(W, H) * pulse;
         const [R, G, B] = o.rgb;
         const g = this.ctx.createRadialGradient(x, y, 0, x, y, r);
-        g.addColorStop(0,    `rgba(${R},${G},${B},0.35)`);
-        g.addColorStop(0.35, `rgba(${R},${G},${B},0.21)`);
-        g.addColorStop(0.70, `rgba(${R},${G},${B},0.08)`);
+        g.addColorStop(0,    `rgba(${R},${G},${B},0.22)`);
+        g.addColorStop(0.35, `rgba(${R},${G},${B},0.13)`);
+        g.addColorStop(0.70, `rgba(${R},${G},${B},0.05)`);
         g.addColorStop(1,    `rgba(${R},${G},${B},0)`);
         this.ctx.fillStyle = g;
         this.ctx.beginPath();
@@ -1003,6 +1095,7 @@
   <canvas id="aurora-canvas" aria-hidden="true"></canvas>
   <div class="grain-overlay" aria-hidden="true"></div>
   <div class="particles-wrap" id="particles-wrap" aria-hidden="true"></div>
+  <div id="cursor-glow"></div>
 
   <!-- ─── NAVIGATION ─────────────────────────────────────────── -->
   <nav class="nav" role="navigation" aria-label="Main navigation">
@@ -1083,7 +1176,7 @@
 
   <!-- ─── SEARCH ─────────────────────────────────────────────── -->
   <section class="search-section" aria-label="Search events">
-    <div class="search-inner">
+    <div class="search-inner reveal">
       <label class="search-label" for="searchInput">Search Events</label>
       <div class="search-wrap">
         <!-- Magnifying glass icon -->
@@ -1105,7 +1198,7 @@
 
   <!-- ─── FEATURED EVENTS ────────────────────────────────────── -->
   <section class="events-section" id="events" aria-labelledby="eventsTitle">
-    <div class="events-header">
+    <div class="events-header reveal">
       <p class="events-eyebrow">Upcoming</p>
       <h2 class="events-title" id="eventsTitle">Featured Events</h2>
       <p class="events-subtitle">Hand-picked experiences happening near you</p>
